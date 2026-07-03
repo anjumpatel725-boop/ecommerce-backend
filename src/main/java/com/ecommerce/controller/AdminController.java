@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "https://ecommerce-backend-production-075f.up.railway.app")
 public class AdminController {
 
     @Autowired

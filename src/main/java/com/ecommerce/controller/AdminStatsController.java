@@ -10,7 +10,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/admin/stats")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "https://ecommerce-backend-production-075f.up.railway.app")
 public class AdminStatsController {
 
     @Autowired

@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public class ProductDTO {
 
-    private Long id;   // ADD THIS
+    private Long id;  
 
     private String name;
     private String description;

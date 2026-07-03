@@ -15,7 +15,7 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOrigins(
-                            "http://localhost:5173",
+                            "https://ecommerce-backend-production-075f.up.railway.app",
                             "https://your-frontend.vercel.app"
                         )
                         .allowedMethods("*")
