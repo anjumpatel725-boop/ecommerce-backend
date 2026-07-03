@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
-@CrossOrigin(origins = "https://ecommerce-backend-production-075f.up.railway.app")
+@CrossOrigin(origins = "*")
 public class OrderController {
 
     @Autowired
