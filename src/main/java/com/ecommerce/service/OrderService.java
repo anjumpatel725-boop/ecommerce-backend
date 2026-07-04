@@ -27,6 +27,9 @@ public class OrderService {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private AddressRepository addressRepository;
+
     public Order placeOrder(Long userId) {
 
         // Get User
@@ -34,7 +37,9 @@ public class OrderService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         // Check Address
-        if (user.getAddress() == null || user.getAddress().trim().isEmpty()) {
+        List<Address> addresses = addressRepository.findByUserId(userId);
+
+        if (addresses.isEmpty()) {
             throw new RuntimeException("Please add your delivery address before placing the order.");
         }
 
@@ -69,6 +74,7 @@ public class OrderService {
 
             // Create Order Item
             OrderItem item = new OrderItem();
+
             item.setOrder(order);
             item.setProduct(product);
             item.setQuantity(cart.getQuantity());
