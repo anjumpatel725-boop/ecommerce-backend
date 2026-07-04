@@ -23,6 +23,9 @@ public class OrderService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+private ProductRepository productRepository;
+
 
     public Order placeOrder(Long userId) {
 
@@ -39,21 +42,33 @@ public class OrderService {
         BigDecimal total = BigDecimal.ZERO;
 
         for (Cart cart : cartItems) {
-            OrderItem item = new OrderItem();
 
-            item.setOrder(order);
-            item.setProduct(cart.getProduct());
-            item.setQuantity(cart.getQuantity());
+    Product product = cart.getProduct();
 
-            BigDecimal itemPrice =
-                    cart.getProduct().getPrice()
-                            .multiply(BigDecimal.valueOf(cart.getQuantity()));
+    if (product.getStockQuantity() < cart.getQuantity()) {
+        throw new RuntimeException(product.getName() + " is out of stock");
+    }
 
-            item.setPrice(itemPrice);
-            total = total.add(itemPrice);
+    product.setStockQuantity(
+            product.getStockQuantity() - cart.getQuantity()
+    );
 
-            orderItems.add(item);
-        }
+    productRepository.save(product);
+
+    OrderItem item = new OrderItem();
+
+    item.setOrder(order);
+    item.setProduct(product);
+    item.setQuantity(cart.getQuantity());
+
+    BigDecimal itemPrice = product.getPrice()
+            .multiply(BigDecimal.valueOf(cart.getQuantity()));
+
+    item.setPrice(itemPrice);
+    total = total.add(itemPrice);
+
+    orderItems.add(item);
+}
 
         order.setItems(orderItems);
         order.setTotalAmount(total);
