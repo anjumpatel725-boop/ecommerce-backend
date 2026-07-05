@@ -1,6 +1,8 @@
 package com.ecommerce.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 @Entity
 @Table(name="addresses")
@@ -10,14 +12,37 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String fullName;
-    private String mobile;
-    private String house;
-    private String street;
-    private String city;
-    private String state;
-    private String country;
-    private String pincode;
+    @NotBlank(message = "Full Name is required")
+private String fullName;
+
+@NotBlank(message = "Mobile number is required")
+@Pattern(
+    regexp = "^[0-9]{10}$",
+    message = "Mobile number must be exactly 10 digits"
+)
+private String mobile;
+
+@NotBlank(message = "House is required")
+private String house;
+
+@NotBlank(message = "Street is required")
+private String street;
+
+@NotBlank(message = "City is required")
+private String city;
+
+@NotBlank(message = "State is required")
+private String state;
+
+@NotBlank(message = "Country is required")
+private String country;
+
+@NotBlank(message = "Pincode is required")
+@Pattern(
+    regexp = "^[0-9]{6}$",
+    message = "Pincode must be exactly 6 digits"
+)
+private String pincode;
 
     @ManyToOne
     @JoinColumn(name="user_id")

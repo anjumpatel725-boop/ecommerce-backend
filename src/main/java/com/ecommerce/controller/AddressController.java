@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/address")
@@ -18,13 +19,12 @@ public class AddressController {
 
     // Save Address
     @PostMapping("/{userId}")
-    public Address saveAddress(
-            @PathVariable Long userId,
-            @RequestBody Address address) {
+public Address saveAddress(
+        @PathVariable Long userId,
+        @Valid @RequestBody Address address) {
 
-        return addressService.saveAddress(userId, address);
-    }
-
+    return addressService.saveAddress(userId, address);
+}
     // Get Addresses
     @GetMapping("/{userId}")
     public List<Address> getAddresses(@PathVariable Long userId) {
