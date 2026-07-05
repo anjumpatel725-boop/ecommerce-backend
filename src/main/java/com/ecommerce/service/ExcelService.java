@@ -21,15 +21,37 @@ public class ExcelService {
 
     public ByteArrayInputStream exportOrders() throws Exception {
 
-        String[] columns = {"Order ID", "User Email", "Amount", "Status"};
+        String[] columns = {
+                "Order ID",
+                "User Email",
+                "Customer Name",
+                "Mobile",
+                "House",
+                "Street",
+                "City",
+                "State",
+                "Country",
+                "Pincode",
+                "Amount",
+                "Status"
+        };
 
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Orders");
 
+        // Header Style
+        CellStyle headerStyle = workbook.createCellStyle();
+        Font font = workbook.createFont();
+        font.setBold(true);
+        font.setFontHeightInPoints((short)11);
+        headerStyle.setFont(font);
+
         Row header = sheet.createRow(0);
 
         for (int i = 0; i < columns.length; i++) {
-            header.createCell(i).setCellValue(columns[i]);
+            Cell cell = header.createCell(i);
+            cell.setCellValue(columns[i]);
+            cell.setCellStyle(headerStyle);
         }
 
         List<Order> orders = orderRepository.findAll();
@@ -37,21 +59,61 @@ public class ExcelService {
         int rowIdx = 1;
 
         for (Order o : orders) {
+
             Row row = sheet.createRow(rowIdx++);
 
             row.createCell(0).setCellValue(o.getId());
 
             row.createCell(1).setCellValue(
-                    o.getUser() != null ? o.getUser().getEmail() : "N/A"
+                    o.getUser() != null ? o.getUser().getEmail() : ""
             );
 
             row.createCell(2).setCellValue(
-                    o.getTotalAmount() != null ? o.getTotalAmount().doubleValue() : 0
+                    o.getFullName() != null ? o.getFullName() : ""
             );
 
             row.createCell(3).setCellValue(
-                    o.getStatus() != null ? o.getStatus() : "N/A"
+                    o.getMobile() != null ? o.getMobile() : ""
             );
+
+            row.createCell(4).setCellValue(
+                    o.getHouse() != null ? o.getHouse() : ""
+            );
+
+            row.createCell(5).setCellValue(
+                    o.getStreet() != null ? o.getStreet() : ""
+            );
+
+            row.createCell(6).setCellValue(
+                    o.getCity() != null ? o.getCity() : ""
+            );
+
+            row.createCell(7).setCellValue(
+                    o.getState() != null ? o.getState() : ""
+            );
+
+            row.createCell(8).setCellValue(
+                    o.getCountry() != null ? o.getCountry() : ""
+            );
+
+            row.createCell(9).setCellValue(
+                    o.getPincode() != null ? o.getPincode() : ""
+            );
+
+            row.createCell(10).setCellValue(
+                    o.getTotalAmount() != null
+                            ? o.getTotalAmount().doubleValue()
+                            : 0
+            );
+
+            row.createCell(11).setCellValue(
+                    o.getStatus() != null ? o.getStatus() : ""
+            );
+        }
+
+        // Auto Size Columns
+        for (int i = 0; i < columns.length; i++) {
+            sheet.autoSizeColumn(i);
         }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -61,4 +123,3 @@ public class ExcelService {
         return new ByteArrayInputStream(out.toByteArray());
     }
 }
-
