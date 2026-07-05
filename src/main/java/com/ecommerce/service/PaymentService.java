@@ -19,6 +19,7 @@ public class PaymentService {
 
     System.out.println("KEY = " + key);
     System.out.println("SECRET = " + secret);
+    System.out.println("AMOUNT = " + amount);
 
     RazorpayClient client = new RazorpayClient(key, secret);
 
@@ -28,6 +29,8 @@ public class PaymentService {
     options.put("receipt", "receipt_" + System.currentTimeMillis());
 
     Order order = client.orders.create(options);
+
+    System.out.println(order);
 
     return order.toString();
 }
