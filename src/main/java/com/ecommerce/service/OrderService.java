@@ -30,76 +30,68 @@ public class OrderService {
     @Autowired
     private AddressRepository addressRepository;
 
-    public Order placeOrder(Long userId) {
+    public Order placeSingleOrder(Long userId, Long cartId) {
 
-        // Get User
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Check Address
-        List<Address> addresses = addressRepository.findByUserId(userId);
+    List<Address> addresses = addressRepository.findByUserId(userId);
 
-        if (addresses.isEmpty()) {
-            throw new RuntimeException("Please add your delivery address before placing the order.");
-        }
-
-        // Get Cart Items
-        List<Cart> cartItems = cartRepository.findByUserId(userId);
-
-        if (cartItems.isEmpty()) {
-            throw new RuntimeException("Cart is empty.");
-        }
-
-        Order order = new Order();
-        order.setUser(user);
-        order.setStatus("PLACED");
-
-        List<OrderItem> orderItems = new ArrayList<>();
-        BigDecimal total = BigDecimal.ZERO;
-
-        for (Cart cart : cartItems) {
-
-            Product product = cart.getProduct();
-
-            // Stock Check
-            if (product.getStockQuantity() < cart.getQuantity()) {
-                throw new RuntimeException(product.getName() + " is out of stock.");
-            }
-
-            // Reduce Stock
-            product.setStockQuantity(
-                    product.getStockQuantity() - cart.getQuantity());
-
-            productRepository.save(product);
-
-            // Create Order Item
-            OrderItem item = new OrderItem();
-
-            item.setOrder(order);
-            item.setProduct(product);
-            item.setQuantity(cart.getQuantity());
-
-            BigDecimal itemPrice = product.getPrice()
-                    .multiply(BigDecimal.valueOf(cart.getQuantity()));
-
-            item.setPrice(itemPrice);
-
-            total = total.add(itemPrice);
-
-            orderItems.add(item);
-        }
-
-        order.setItems(orderItems);
-        order.setTotalAmount(total);
-
-        Order savedOrder = orderRepository.save(order);
-
-        // Clear Cart
-        cartRepository.deleteAll(cartItems);
-
-        return savedOrder;
+    if (addresses.isEmpty()) {
+        throw new RuntimeException("Please add your delivery address.");
     }
 
+    Cart cart = cartRepository.findByIdAndUserId(cartId, userId)
+            .orElseThrow(() -> new RuntimeException("Cart item not found"));
+
+    Product product = cart.getProduct();
+
+    if (product.getStockQuantity() < cart.getQuantity()) {
+        throw new RuntimeException("Out of Stock");
+    }
+
+    product.setStockQuantity(
+            product.getStockQuantity() - cart.getQuantity());
+
+    productRepository.save(product);
+
+    Order order = new Order();
+
+    order.setUser(user);
+
+    order.setStatus("PLACED");
+
+    List<OrderItem> items = new ArrayList<>();
+
+    OrderItem item = new OrderItem();
+
+    item.setOrder(order);
+
+    item.setProduct(product);
+
+    item.setQuantity(cart.getQuantity());
+
+    BigDecimal total = product.getPrice()
+            .multiply(BigDecimal.valueOf(cart.getQuantity()));
+
+    item.setPrice(total);
+
+    items.add(item);
+
+    order.setItems(items);
+
+for (OrderItem orderItem : items) {
+    orderItem.setOrder(order);
+}
+
+    order.setTotalAmount(total);
+
+    Order saved = orderRepository.save(order);
+
+    cartRepository.delete(cart);
+
+    return saved;
+}
     public List<Order> getOrders(Long userId) {
         return orderRepository.findByUserId(userId);
     }

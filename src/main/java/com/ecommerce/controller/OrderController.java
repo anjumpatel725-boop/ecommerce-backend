@@ -17,10 +17,15 @@ public class OrderController {
     private OrderService orderService;
 
     // PLACE ORDER
-    @PostMapping("/{userId}")
-    public Order placeOrder(@PathVariable Long userId) {
-        return orderService.placeOrder(userId);
-    }
+    
+    @PostMapping("/{userId}/{cartId}")
+public Order placeSingleOrder(
+        @PathVariable Long userId,
+        @PathVariable Long cartId) {
+
+    return orderService.placeSingleOrder(userId, cartId);
+
+}
 
     // GET USER ORDERS
     @GetMapping("/{userId}")
