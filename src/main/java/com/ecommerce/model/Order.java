@@ -2,6 +2,7 @@ package com.ecommerce.model;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -15,6 +16,7 @@ public class Order {
 
     private BigDecimal totalAmount;
     private String status;
+    private LocalDateTime orderDate;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -33,7 +35,13 @@ private String city;
 private String state;
 private String country;
 private String pincode;
-    
+    public LocalDateTime getOrderDate() {
+    return orderDate;
+}
+
+public void setOrderDate(LocalDateTime orderDate) {
+    this.orderDate = orderDate;
+}
     public Order() {}
 
     public Long getId() {

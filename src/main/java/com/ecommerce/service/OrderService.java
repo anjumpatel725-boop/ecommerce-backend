@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,6 +77,7 @@ public class OrderService {
         order.setState(address.getState());
         order.setCountry(address.getCountry());
         order.setPincode(address.getPincode());
+        order.setOrderDate(LocalDateTime.now());
 
         order.setStatus("PLACED");
 
