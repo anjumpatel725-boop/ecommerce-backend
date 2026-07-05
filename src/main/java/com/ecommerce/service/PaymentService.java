@@ -15,18 +15,20 @@ public class PaymentService {
     @Value("${razorpay.secret}")
     private String secret;
 
-    public String createOrder(Integer amount) throws Exception {
+   public String createOrder(Integer amount) throws Exception {
 
-        RazorpayClient client = new RazorpayClient(key, secret);
+    System.out.println("KEY = " + key);
+    System.out.println("SECRET = " + secret);
 
-        JSONObject options = new JSONObject();
+    RazorpayClient client = new RazorpayClient(key, secret);
 
-        options.put("amount", amount * 100);
-        options.put("currency", "INR");
-        options.put("receipt", "receipt_" + System.currentTimeMillis());
+    JSONObject options = new JSONObject();
+    options.put("amount", amount * 100);
+    options.put("currency", "INR");
+    options.put("receipt", "receipt_" + System.currentTimeMillis());
 
-        Order order = client.orders.create(options);
+    Order order = client.orders.create(options);
 
-        return order.toString();
-    }
+    return order.toString();
+}
 }
