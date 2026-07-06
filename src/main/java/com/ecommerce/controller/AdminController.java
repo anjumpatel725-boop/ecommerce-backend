@@ -49,29 +49,24 @@ public class AdminController {
 
     // EXPORT EXCEL
    @GetMapping("/orders/export/excel")
-public ResponseEntity<byte[]> exportExcel() {
+public ResponseEntity<?> exportExcel() {
 
     try {
 
-        System.out.println("STEP 1");
-
-        byte[] excel = excelService.exportOrders();
-
-        System.out.println("STEP 2 Size = " + excel.length);
+        byte[] data = excelService.exportOrders();
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=orders.xlsx")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=orders.xlsx")
                 .contentType(MediaType.parseMediaType(
                         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-                .body(excel);
+                .body(data);
 
     } catch (Exception e) {
 
-        System.out.println("========== ERROR ==========");
         e.printStackTrace();
 
-        return ResponseEntity.internalServerError().build();
+        return ResponseEntity.status(500)
+                .body(e.toString());
     }
 }
 }
