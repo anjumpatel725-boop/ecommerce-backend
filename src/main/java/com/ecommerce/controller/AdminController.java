@@ -56,24 +56,17 @@ public ResponseEntity<byte[]> exportExcel() {
         byte[] excel = excelService.exportOrders();
 
         return ResponseEntity.ok()
-                .header(
-                        HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=orders.xlsx"
-                )
-                .contentType(
-                        MediaType.parseMediaType(
-                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                        )
-                )
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=orders.xlsx")
+                .contentType(MediaType.parseMediaType(
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
                 .body(excel);
 
     } catch (Exception e) {
 
-    e.printStackTrace();
+        e.printStackTrace();
+        throw new RuntimeException(e);
 
-    throw new RuntimeException(e);
-
-}
-
+    }
 }
 }
