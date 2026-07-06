@@ -2,16 +2,13 @@ package com.ecommerce.service;
 
 import com.ecommerce.model.Order;
 import com.ecommerce.repository.OrderRepository;
-
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
-
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 @Service
 public class ExcelService {
@@ -19,9 +16,10 @@ public class ExcelService {
     @Autowired
     private OrderRepository orderRepository;
 
-    public ByteArrayInputStream exportOrders() throws Exception {
+    public byte[] exportOrders() throws Exception {
 
-        System.out.println("========== EXCEL EXPORT STARTED ==========");
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Orders");
 
         String[] columns = {
                 "Order ID",
@@ -38,117 +36,52 @@ public class ExcelService {
                 "Status"
         };
 
-        Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("Orders");
-
-        CellStyle headerStyle = workbook.createCellStyle();
         Font font = workbook.createFont();
         font.setBold(true);
-        font.setFontHeightInPoints((short) 11);
-        headerStyle.setFont(font);
+
+        CellStyle style = workbook.createCellStyle();
+        style.setFont(font);
 
         Row header = sheet.createRow(0);
 
         for (int i = 0; i < columns.length; i++) {
             Cell cell = header.createCell(i);
             cell.setCellValue(columns[i]);
-            cell.setCellStyle(headerStyle);
+            cell.setCellStyle(style);
         }
 
         List<Order> orders = orderRepository.findAll();
 
-        System.out.println("Total Orders = " + orders.size());
-
-        int rowIdx = 1;
+        int row = 1;
 
         for (Order o : orders) {
 
-            try {
+            Row r = sheet.createRow(row++);
 
-                System.out.println("Processing Order ID : " + o.getId());
+            r.createCell(0).setCellValue(o.getId());
 
-                Row row = sheet.createRow(rowIdx++);
+            r.createCell(1).setCellValue(
+                    o.getUser() != null
+                            ? o.getUser().getEmail()
+                            : ""
+            );
 
-                row.createCell(0).setCellValue(
-                        o.getId() != null ? o.getId() : 0
-                );
+            r.createCell(2).setCellValue(o.getFullName());
+            r.createCell(3).setCellValue(o.getMobile());
+            r.createCell(4).setCellValue(o.getHouse());
+            r.createCell(5).setCellValue(o.getStreet());
+            r.createCell(6).setCellValue(o.getCity());
+            r.createCell(7).setCellValue(o.getState());
+            r.createCell(8).setCellValue(o.getCountry());
+            r.createCell(9).setCellValue(o.getPincode());
 
-                row.createCell(1).setCellValue(
-                        o.getUser() != null &&
-                        o.getUser().getEmail() != null
-                                ? o.getUser().getEmail()
-                                : ""
-                );
+            r.createCell(10).setCellValue(
+                    o.getTotalAmount() != null
+                            ? o.getTotalAmount().doubleValue()
+                            : 0
+            );
 
-                row.createCell(2).setCellValue(
-                        o.getFullName() != null
-                                ? o.getFullName()
-                                : ""
-                );
-
-                row.createCell(3).setCellValue(
-                        o.getMobile() != null
-                                ? o.getMobile()
-                                : ""
-                );
-
-                row.createCell(4).setCellValue(
-                        o.getHouse() != null
-                                ? o.getHouse()
-                                : ""
-                );
-
-                row.createCell(5).setCellValue(
-                        o.getStreet() != null
-                                ? o.getStreet()
-                                : ""
-                );
-
-                row.createCell(6).setCellValue(
-                        o.getCity() != null
-                                ? o.getCity()
-                                : ""
-                );
-
-                row.createCell(7).setCellValue(
-                        o.getState() != null
-                                ? o.getState()
-                                : ""
-                );
-
-                row.createCell(8).setCellValue(
-                        o.getCountry() != null
-                                ? o.getCountry()
-                                : ""
-                );
-
-                row.createCell(9).setCellValue(
-                        o.getPincode() != null
-                                ? o.getPincode()
-                                : ""
-                );
-
-                row.createCell(10).setCellValue(
-                        o.getTotalAmount() != null
-                                ? o.getTotalAmount().doubleValue()
-                                : 0
-                );
-
-                row.createCell(11).setCellValue(
-                        o.getStatus() != null
-                                ? o.getStatus()
-                                : ""
-                );
-
-            } catch (Exception ex) {
-
-                System.out.println("ERROR IN ORDER ID : " + o.getId());
-
-                ex.printStackTrace();
-
-                throw ex;
-            }
-
+            r.createCell(11).setCellValue(o.getStatus());
         }
 
         for (int i = 0; i < columns.length; i++) {
@@ -161,8 +94,9 @@ public class ExcelService {
 
         workbook.close();
 
-        System.out.println("========== EXCEL CREATED SUCCESSFULLY ==========");
+        out.close();
 
-        return new ByteArrayInputStream(out.toByteArray());
+        return out.toByteArray();
     }
+
 }
