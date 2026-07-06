@@ -48,25 +48,16 @@ public class AdminController {
     }
 
     // EXPORT EXCEL
-   @GetMapping("/orders/export/excel")
-public ResponseEntity<?> exportExcel() {
+  @GetMapping("/orders/export/excel")
+public ResponseEntity<byte[]> exportExcel() throws Exception {
 
-    try {
+    byte[] excel = excelService.exportOrders();
 
-        byte[] data = excelService.exportOrders();
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=orders.xlsx")
-                .contentType(MediaType.parseMediaType(
-                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-                .body(data);
-
-    } catch (Exception e) {
-
-        e.printStackTrace();
-
-        return ResponseEntity.status(500)
-                .body(e.toString());
-    }
+    return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION,
+                    "attachment; filename=orders.xlsx")
+            .contentType(MediaType.parseMediaType(
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+            .body(excel);
 }
 }
