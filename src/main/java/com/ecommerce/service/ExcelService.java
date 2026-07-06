@@ -77,7 +77,9 @@ public class ExcelService {
                             : 0
             );
 
-            r.createCell(11).setCellValue(o.getStatus());
+            r.createCell(2).setCellValue(
+        o.getFullName() == null ? "" : o.getFullName()
+);
         }
 
         for (int i = 0; i < columns.length; i++) {

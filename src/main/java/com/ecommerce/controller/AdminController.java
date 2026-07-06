@@ -49,9 +49,31 @@ public class AdminController {
 
     // EXPORT EXCEL
    @GetMapping("/orders/export/excel")
-public ResponseEntity<?> exportExcel() {
+public ResponseEntity<byte[]> exportExcel() {
 
-    return ResponseEntity.ok("HELLO EXCEL");
+    try {
+
+        byte[] excel = excelService.exportOrders();
+
+        return ResponseEntity.ok()
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=orders.xlsx"
+                )
+                .contentType(
+                        MediaType.parseMediaType(
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        )
+                )
+                .body(excel);
+
+    } catch (Exception e) {
+
+    e.printStackTrace();
+
+    throw new RuntimeException(e);
+
+}
 
 }
 }
