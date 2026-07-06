@@ -21,6 +21,8 @@ public class ExcelService {
 
     public ByteArrayInputStream exportOrders() throws Exception {
 
+        System.out.println("========== EXCEL EXPORT STARTED ==========");
+
         String[] columns = {
                 "Order ID",
                 "User Email",
@@ -39,11 +41,10 @@ public class ExcelService {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Orders");
 
-        // Header Style
         CellStyle headerStyle = workbook.createCellStyle();
         Font font = workbook.createFont();
         font.setBold(true);
-        font.setFontHeightInPoints((short)11);
+        font.setFontHeightInPoints((short) 11);
         headerStyle.setFont(font);
 
         Row header = sheet.createRow(0);
@@ -56,69 +57,111 @@ public class ExcelService {
 
         List<Order> orders = orderRepository.findAll();
 
+        System.out.println("Total Orders = " + orders.size());
+
         int rowIdx = 1;
 
         for (Order o : orders) {
 
-            Row row = sheet.createRow(rowIdx++);
+            try {
 
-            row.createCell(0).setCellValue(o.getId());
+                System.out.println("Processing Order ID : " + o.getId());
 
-            row.createCell(1).setCellValue(
-                    o.getUser() != null ? o.getUser().getEmail() : ""
-            );
+                Row row = sheet.createRow(rowIdx++);
 
-            row.createCell(2).setCellValue(
-                    o.getFullName() != null ? o.getFullName() : ""
-            );
+                row.createCell(0).setCellValue(
+                        o.getId() != null ? o.getId() : 0
+                );
 
-            row.createCell(3).setCellValue(
-                    o.getMobile() != null ? o.getMobile() : ""
-            );
+                row.createCell(1).setCellValue(
+                        o.getUser() != null &&
+                        o.getUser().getEmail() != null
+                                ? o.getUser().getEmail()
+                                : ""
+                );
 
-            row.createCell(4).setCellValue(
-                    o.getHouse() != null ? o.getHouse() : ""
-            );
+                row.createCell(2).setCellValue(
+                        o.getFullName() != null
+                                ? o.getFullName()
+                                : ""
+                );
 
-            row.createCell(5).setCellValue(
-                    o.getStreet() != null ? o.getStreet() : ""
-            );
+                row.createCell(3).setCellValue(
+                        o.getMobile() != null
+                                ? o.getMobile()
+                                : ""
+                );
 
-            row.createCell(6).setCellValue(
-                    o.getCity() != null ? o.getCity() : ""
-            );
+                row.createCell(4).setCellValue(
+                        o.getHouse() != null
+                                ? o.getHouse()
+                                : ""
+                );
 
-            row.createCell(7).setCellValue(
-                    o.getState() != null ? o.getState() : ""
-            );
+                row.createCell(5).setCellValue(
+                        o.getStreet() != null
+                                ? o.getStreet()
+                                : ""
+                );
 
-            row.createCell(8).setCellValue(
-                    o.getCountry() != null ? o.getCountry() : ""
-            );
+                row.createCell(6).setCellValue(
+                        o.getCity() != null
+                                ? o.getCity()
+                                : ""
+                );
 
-            row.createCell(9).setCellValue(
-                    o.getPincode() != null ? o.getPincode() : ""
-            );
+                row.createCell(7).setCellValue(
+                        o.getState() != null
+                                ? o.getState()
+                                : ""
+                );
 
-            row.createCell(10).setCellValue(
-                    o.getTotalAmount() != null
-                            ? o.getTotalAmount().doubleValue()
-                            : 0
-            );
+                row.createCell(8).setCellValue(
+                        o.getCountry() != null
+                                ? o.getCountry()
+                                : ""
+                );
 
-            row.createCell(11).setCellValue(
-                    o.getStatus() != null ? o.getStatus() : ""
-            );
+                row.createCell(9).setCellValue(
+                        o.getPincode() != null
+                                ? o.getPincode()
+                                : ""
+                );
+
+                row.createCell(10).setCellValue(
+                        o.getTotalAmount() != null
+                                ? o.getTotalAmount().doubleValue()
+                                : 0
+                );
+
+                row.createCell(11).setCellValue(
+                        o.getStatus() != null
+                                ? o.getStatus()
+                                : ""
+                );
+
+            } catch (Exception ex) {
+
+                System.out.println("ERROR IN ORDER ID : " + o.getId());
+
+                ex.printStackTrace();
+
+                throw ex;
+            }
+
         }
 
-        // Auto Size Columns
         for (int i = 0; i < columns.length; i++) {
             sheet.autoSizeColumn(i);
         }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
+
         workbook.write(out);
+
         workbook.close();
+
+        System.out.println("========== EXCEL CREATED SUCCESSFULLY ==========");
 
         return new ByteArrayInputStream(out.toByteArray());
     }
