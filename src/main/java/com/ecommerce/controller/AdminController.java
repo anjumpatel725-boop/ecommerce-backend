@@ -53,7 +53,11 @@ public ResponseEntity<byte[]> exportExcel() {
 
     try {
 
+        System.out.println("STEP 1");
+
         byte[] excel = excelService.exportOrders();
+
+        System.out.println("STEP 2 Size = " + excel.length);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION,
@@ -64,9 +68,10 @@ public ResponseEntity<byte[]> exportExcel() {
 
     } catch (Exception e) {
 
+        System.out.println("========== ERROR ==========");
         e.printStackTrace();
-        throw new RuntimeException(e);
 
+        return ResponseEntity.internalServerError().build();
     }
 }
 }
