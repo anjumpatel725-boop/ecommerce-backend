@@ -60,11 +60,7 @@ public class ExcelService {
 
             r.createCell(0).setCellValue(o.getId());
 
-            r.createCell(1).setCellValue(
-                    o.getUser() != null
-                            ? o.getUser().getEmail()
-                            : ""
-            );
+            r.createCell(1).setCellValue("test@example.com");
 
             r.createCell(2).setCellValue(o.getFullName());
             r.createCell(3).setCellValue(o.getMobile());

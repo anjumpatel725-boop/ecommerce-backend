@@ -69,13 +69,9 @@ public ResponseEntity<?> exportExcel() {
                 .body(excel);
 
     } catch (Exception e) {
-
-        e.printStackTrace();
-
-        return ResponseEntity
-                .status(500)
-                .body(e.getMessage());
-    }
+    e.printStackTrace();
+    return ResponseEntity.status(500).body(e.toString());
+}
 
 }
 }
