@@ -61,27 +61,30 @@ public class AuthService {
 
     Map<String, Object> response = new HashMap<>();
 
-    try {
-        User user = userRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    // Check user exists
+    User user = userRepository.findByEmail(dto.getEmail()).orElse(null);
 
-                
-
-        if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-    throw new RuntimeException("Invalid password");
-}
-
-        String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
-
-        response.put("status", "SUCCESS");
-        response.put("token", token);
-        response.put("userId", user.getId());
-        response.put("name", user.getName());
-        response.put("role", user.getRole());
-
-    } catch (Exception e) {
-        response.put("status", "INVALID");
+    if (user == null) {
+        response.put("status", "USER_NOT_FOUND");
+        response.put("message", "Please register first.");
+        return response;
     }
+
+    // Check password
+    if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+        response.put("status", "INVALID_PASSWORD");
+        response.put("message", "Incorrect password.");
+        return response;
+    }
+
+    // Login Success
+    String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
+
+    response.put("status", "SUCCESS");
+    response.put("token", token);
+    response.put("userId", user.getId());
+    response.put("name", user.getName());
+    response.put("role", user.getRole());
 
     return response;
 }
